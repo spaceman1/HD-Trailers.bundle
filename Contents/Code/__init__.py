@@ -1,6 +1,4 @@
 from PMS import *
-from PMS.Objects import *
-from PMS.Shortcuts import *
 
 import string
 
@@ -29,11 +27,12 @@ def CreatePrefs():
   Prefs.Add(id='filter.apple', type='bool', default=True, label='Exclude Apple Trailers')
 
 def MainMenu():
-  dir = MediaContainer(noCache=True)
+  dir = MediaContainer()
   sort = Prefs.Get('sort').lower()
+  Log("Root:"+ROOT+sort)
   for poster in XML.ElementFromURL(ROOT + sort, True).xpath('//td[@class="indexTableTrailerImage"]/a'):
     url = BASE + poster.get('href')
-    thumb = BASE + poster.xpath('./img')[0].get('src')
+    thumb = poster.xpath('./img')[0].get('src')
     title = poster.xpath('./img')[0].get('alt')
     dir.Append(Function(PopupDirectoryItem(VideosMenu, title=title, thumb=thumb), url=url))
   dir.Append(Function(DirectoryItem(about, 'About', thumb=R('icon-about.png'))))

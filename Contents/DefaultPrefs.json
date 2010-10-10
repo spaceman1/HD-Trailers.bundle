@@ -18,5 +18,5 @@
     "type":"bool",
     "label":"Exclude Apple Trailers",
     "default":"true",
-  },
+  }
 ]

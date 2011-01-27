@@ -1,7 +1,12 @@
 import string
 
 PLUGIN_PREFIX = "/video/HDTrailers"
-ROOT = "http://www.hd-trailers.net/indexAll.php?displayType=poster&sortBy="
+TOP_10 = "http://www.hd-trailers.net/TopMovies/"
+LATEST = "http://www.hd-trailers.net/Page/"
+LIBRARY = "http://www.hd-trailers.net/PosterLibrary/"
+OPENING = "http://www.hd-trailers.net/OpeningThisWeek/"
+COMING_SOON = "http://www.hd-trailers.net/ComingSoon/"
+BLU_RAY = "http://www.hd-trailers.net/BluRay/"
 BASE = "http://www.hd-trailers.net"
 
 CACHE_TIME = 3600
@@ -16,20 +21,56 @@ def Start():
   Plugin.AddPrefixHandler(PLUGIN_PREFIX, MainMenu, "HD Trailers.net", "icon-default.png", "art-default.jpg")
   MediaContainer.title1 = L('HD Trailers.net')
   MediaContainer.art = R('art-default.jpg')
+  DirectoryItem.thumb = R("icon-default.png")
   HTTP.CacheTime = CACHE_TIME
 ####################################################################################################
 
 def MainMenu():
   dir = MediaContainer()
-  sort = Prefs['sortOrder'].lower()
-  Log("Root:"+ROOT+sort)
-  for poster in HTML.ElementFromURL(ROOT + sort).xpath('//td[@class="indexTableTrailerImage"]/a'):
-    url = BASE + poster.get('href')
-    thumb = poster.xpath('./img')[0].get('src')
-    title = poster.xpath('./img')[0].get('alt')
-    dir.Append(Function(PopupDirectoryItem(VideosMenu, title=title, thumb=thumb), url=url))
+  dir.Append(Function(DirectoryItem(TopTen, "Top 10")))
+  dir.Append(Function(DirectoryItem(Latest, "Latest")))
+  dir.Append(Function(DirectoryItem(Opening, "Opening")))
+  dir.Append(Function(DirectoryItem(ComingSoon, "Coming Soon")))
+  dir.Append(Function(DirectoryItem(BluRay, "Blu-Ray")))
+  dir.Append(Function(DirectoryItem(Library, "Library")))
+  dir.Append(PrefsItem("Preferences...", thumb=R('icon-prefs.png')))
   dir.Append(Function(DirectoryItem(about, 'About', thumb=R('icon-about.png'))))
   return dir
+  
+def TopTen(sender):
+  return Videos(sender, TOP_10)
+  
+def Opening(sender):
+  return Videos(sender, OPENING)
+  
+def ComingSoon(sender):
+  return Videos(sender, COMING_SOON)
+  
+def BluRay(sender):
+  return Videos(sender, BLU_RAY)
+  
+def Latest(sender, page=1):
+  dir = Videos(sender, LATEST + str(page))
+  dir.Append(Function(DirectoryItem(Latest, "More ..."), page=page+1))
+  return dir
+  
+def Library(sender):
+  dir = MediaContainer()
+  for page in list(string.uppercase):
+      dir.Append(Function(DirectoryItem(Videos, page), pageUrl=LIBRARY+page))
+  return dir
+  
+def Videos(sender, pageUrl):
+  dir = MediaContainer()
+  for poster in HTML.ElementFromURL(pageUrl).xpath('//td[@class="indexTableTrailerImage"]/a'):
+    if len(poster.xpath('./img')) > 0:
+       url = BASE + poster.get('href')
+       thumb = poster.xpath('./img')[0].get('src')
+       title = poster.xpath('./img')[0].get('alt')
+       dir.Append(Function(PopupDirectoryItem(VideosMenu, title=title, thumb=thumb), url=url))
+  dir.Append(Function(DirectoryItem(about, 'About', thumb=R('icon-about.png'))))
+  return dir
+
 
 def about(sender):
   return MessageContainer(header='About', message='Icon and Code by Ryan McNally. Art by jpmatth on flicker http://www.flickr.com/photos/jpmatth/979337931/', title1='title1', title2='title2')

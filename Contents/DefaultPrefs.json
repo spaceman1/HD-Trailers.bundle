@@ -4,19 +4,19 @@
     "label": "Sort By",
     "type": "enum",
     "values": ["Name", "Date"],
-    "default": "name",
+    "default": "name"
   }, 
   {
     "id": "resolution",
     "label": "Default Resolution",
     "type": "enum",
     "values": ["480p","720p","1080p","Prompt"],
-    "default": "480p",
+    "default": "480p"
   }, 
   {
     "id":"exclude.apple",
     "type":"bool",
     "label":"Exclude Apple Trailers",
-    "default":"true",
+    "default":"true"
   }
 ]

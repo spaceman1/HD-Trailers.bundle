@@ -83,7 +83,8 @@ def VideosMenu(sender, url):
 	      baseTitleItems = row.xpath('./td[@class="bottomTableName"]')
 	      baseTitle = None
 	      if len(baseTitleItems) > 0:
-	      	baseTitle = baseTitleItems[0].text
+	      	baseTitle = baseTitleItems[0].xpath('./span')[0].text
+	      Log(baseTitle)
 	      if baseTitle != None:
 	        for res in row.xpath('./td[@class="bottomTableResolution"]/a'):
 	           resTitle = res.text
